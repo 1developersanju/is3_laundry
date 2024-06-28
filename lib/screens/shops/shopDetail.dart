@@ -12,12 +12,16 @@ class ShopDetailScreen extends StatefulWidget {
   final String title;
   final List services;
   final int price;
+  final String shopName;
+  final String shopId;
 
   ShopDetailScreen(
       {Key? key,
       required this.title,
       required this.services,
-      required this.price})
+      required this.price,
+      required this.shopId,
+      required this.shopName})
       : super(key: key);
 
   @override
@@ -36,7 +40,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     super.initState();
     // Fetch the current user's phone number and address from the profile and set the controllers
     var userProvider = Provider.of<UserDataProvider>(context, listen: false);
-    _phoneController.text = userProvider.currentUser!.phoneNumber.toString();
+ _phoneController.text = userProvider.currentUser!.phoneNumber.toString().substring(3);
+;
     _addressController.text = userProvider.addressLine1.toString();
   }
 
@@ -229,10 +234,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                       id: currentUser!.uid,
                       serviceType: servicesList[_selectedIndex],
                       weight: double.parse(_weightController.text),
-                      phoneNumber: _phoneController.text,
+                      phoneNumber: "+91 " + _phoneController.text,
                       location: _addressController.text,
-                      dateTime: DateTime.now(),
+                      date: DateTime.timestamp(),
                       status: "",
+                      shopName: widget.shopName,
+                      shopid: widget.shopId,
                       price:
                           widget.price * double.parse(_weightController.text),
                     );
@@ -240,7 +247,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                     var orderProvider =
                         Provider.of<OrderProvider>(context, listen: false);
                     await orderProvider.createOrder(order);
-
+                    print("order: ${order.shopName}");
                     Navigator.pushNamed(context, bookingSuccessScreen,
                         arguments: [
                           'Booked successfully. \nOur team member will contact you shortly.\nThank you!!!',

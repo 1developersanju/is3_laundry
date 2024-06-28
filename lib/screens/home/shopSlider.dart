@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:laundry/helpers/colorRes.dart';
 import 'package:laundry/helpers/utlis/routeGenerator.dart';
 import 'package:laundry/providers/shopProvider.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,7 @@ class _VerticalShopSliderState extends State<VerticalShopSlider> {
       child: Stack(
         children: [
           Container(
-            color: Colors.blue, // Replace with your desired background color
+            color: ColorsRes.themeBlue, // Replace with your desired background color
             height: 180,
             child: ListView.builder(
               controller: _scrollController,
@@ -47,7 +48,7 @@ class _VerticalShopSliderState extends State<VerticalShopSlider> {
                 var shop = shopProvider.shops[index];
                 return GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, shopDetailScreen, arguments: [shop.title, shop.services,int.parse(shop.price)]);
+                    Navigator.pushNamed(context, shopDetailScreen, arguments: [shop.title, shop.services,int.parse(shop.price),shop.title,shop.id]);
                   },
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),

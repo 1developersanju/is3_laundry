@@ -6,9 +6,11 @@ class Orders {
   final String location;
   final String status;
   final double price;
-  final DateTime dateTime;
-  final double weight; // Assuming you've already added this
-  final String phoneNumber; // New field for phone number
+  final DateTime date;
+  final double weight;
+  final String phoneNumber;
+  final String shopName;
+  final String shopid;
 
   Orders({
     required this.id,
@@ -16,21 +18,25 @@ class Orders {
     required this.location,
     required this.status,
     required this.price,
-    required this.dateTime,
+    required this.date,
     required this.weight,
-    required this.phoneNumber, // Include phone number in the constructor
+    required this.phoneNumber,
+    required this.shopName,
+    required this.shopid
   });
 
   factory Orders.fromFirestore(Map<String, dynamic> data, String id) {
     return Orders(
       id: id,
-      serviceType: data['serviceType'],
-      location: data['location'],
-      status: data['status'],
-      price: data['price'].toDouble(),
-      dateTime: (data['dateTime'] as Timestamp).toDate(),
-      weight: data['weight'].toDouble(),
-      phoneNumber: data['phoneNumber'], // Retrieve phone number from Firestore
+      serviceType: data['serviceType'] ?? '',
+      location: data['location'] ?? '',
+      status: data['status'] ?? '',
+      price: data['price']?.toDouble() ?? 0.0,
+      date: (data['date'] as Timestamp).toDate(),
+      weight: data['weight']?.toDouble() ?? 0.0,
+      phoneNumber: data['phoneNumber'] ?? '',
+      shopName: data['shopName']??'',
+      shopid: data['shopId']??''
     );
   }
 
@@ -40,9 +46,11 @@ class Orders {
       'location': location,
       'status': status,
       'price': price,
-      'dateTime': Timestamp.fromDate(dateTime),
+      'date': date,
       'weight': weight,
-      'phoneNumber': phoneNumber, // Include phone number in the map
+      'phoneNumber': phoneNumber,
+      'shopName':shopName,
+      'shopId':shopid
     };
   }
 }

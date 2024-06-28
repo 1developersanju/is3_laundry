@@ -80,7 +80,7 @@ class ShopListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, shopDetailScreen, arguments: [shop.title, shop.services,int.parse(shop.price)]),
+      onTap: () => Navigator.pushNamed(context, shopDetailScreen, arguments: [shop.title, shop.services,int.parse(shop.price),shop.title,shop.id]),
       child: Container(
         decoration: BoxDecoration(
           color: ColorsRes.lightBlue,

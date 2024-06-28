@@ -23,7 +23,7 @@ class _BookingSuccessPageState extends State<BookingSuccessPage> {
       appBar: CustomAppBar(
         isDarkMode: _isDarkMode,
         needActions: true,
-        implyBackButton: true,
+        implyBackButton: false,
         onDarkModeChanged: (value) {
           setState(() {
             _isDarkMode = value;

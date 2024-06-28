@@ -14,8 +14,10 @@ class OrderProvider with ChangeNotifier {
   }
 
   Future<void> createOrder(Orders order) async {
+    print("rrr ${order.shopName}");
     try {
-      DocumentReference docRef = await _firestore.collection('orders').add(order.toMap());
+      await _firestore.collection('orders').add(order.toMap());
+
       // Optionally update the order ID if needed
       // order.id = docRef.id;
       notifyListeners();
@@ -28,7 +30,10 @@ class OrderProvider with ChangeNotifier {
   Future<void> fetchOrders() async {
     try {
       QuerySnapshot snapshot = await _firestore.collection('orders').get();
-      _orders = snapshot.docs.map((doc) => Orders.fromFirestore(doc.data() as Map<String, dynamic>, doc.id)).toList();
+      _orders = snapshot.docs
+          .map((doc) =>
+              Orders.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
       notifyListeners();
     } catch (e) {
       print('Error fetching orders: $e');

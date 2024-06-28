@@ -78,6 +78,8 @@ class RouteGenerator {
                   title: shopDetailArgs[0] as String,
                   services: shopDetailArgs[1],
                   price: shopDetailArgs[2],
+                  shopName: shopDetailArgs[3],
+                  shopId: shopDetailArgs[4],
                 ));
 
       case bookingSuccessScreen:
