@@ -13,6 +13,7 @@ class GetStartedScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).canvasColor,
         elevation: 0,
       ),
+      backgroundColor: ColorsRes.canvasColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -38,7 +39,7 @@ class GetStartedScreen extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, homeScreen);
+                  Navigator.pushNamed(context, bottomBarScreen);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorsRes.themeBlue,

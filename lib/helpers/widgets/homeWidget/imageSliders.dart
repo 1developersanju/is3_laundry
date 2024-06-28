@@ -1,5 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry/model/shopModel.dart';
+
 
 final List<String> imgList = [
   'https://plus.unsplash.com/premium_vector-1682303735385-f3ab879660ec?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGF1bmRyeSUyMHNlcnZpY2V8ZW58MHx8MHx8fDA%3D',
@@ -16,7 +17,7 @@ final List<Widget> imageSliders = imgList
                 borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                 child: Stack(
                   children: <Widget>[
-                    Image.network(item, fit: BoxFit.cover, width: 1000.0),
+                    CachedNetworkImage(imageUrl: item, fit: BoxFit.cover, width: 1000.0),
                     Positioned(
                       bottom: 0.0,
                       left: 0.0,

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Shop {
+  final String id;
   final String image;
   final String title;
   final String price;
   final String location;
-  final List services;
+  final List<String> services;
   bool isBookmarked;
 
   Shop({
+    required this.id,
     required this.image,
     required this.title,
     required this.price,
@@ -17,11 +19,33 @@ class Shop {
     this.isBookmarked = false,
   });
 
+  // CopyWith method to create a copy of Shop with updated fields
+  Shop copyWith({
+    String? id,
+    String? image,
+    String? title,
+    String? price,
+    String? location,
+    List<String>? services,
+    bool? isBookmarked,
+  }) {
+    return Shop(
+      id: id ?? this.id,
+      image: image ?? this.image,
+      title: title ?? this.title,
+      price: price ?? this.price,
+      location: location ?? this.location,
+      services: services ?? this.services,
+      isBookmarked: isBookmarked ?? this.isBookmarked,
+    );
+  }
+
   void toggleBookmark() {
     isBookmarked = !isBookmarked;
   }
 }
 
+/*
 
 final List<Shop> shopList = [
   Shop(
@@ -60,3 +84,4 @@ final List<Shop> shopList = [
 
   ),
 ];
+*/

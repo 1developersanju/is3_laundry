@@ -1,39 +1,91 @@
-// authServices.dart
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:laundry/helpers/utlis/routeGenerator.dart';
+import 'package:laundry/providers/userDataProvider.dart';
 
-class AuthService {
+
+class AuthProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final UserDataProvider _userDataProvider = UserDataProvider();
+  bool isLoading = false;
 
-  Future<void> signInWithPhone(
-    String phoneNumber,
-    Function(PhoneAuthCredential) verificationCompleted,
-    Function(FirebaseAuthException) verificationFailed,
-    Function(String, int?) codeSent,
-    Function(String) codeAutoRetrievalTimeout,
-  ) async {
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: verificationCompleted,
-      verificationFailed: verificationFailed,
-      codeSent: codeSent,
-      codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
-    );
-  }
+  Future<void> verifyPhoneNumber(BuildContext context, String phoneNumber) async {
+    isLoading = true;
+    notifyListeners();
 
-  Future<User?> signInWithCredential(PhoneAuthCredential credential) async {
     try {
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-      return userCredential.user;
+      String formattedPhoneNumber = "+91 " + phoneNumber.trim().replaceAll(' ', '');
+      await _auth.verifyPhoneNumber(
+        phoneNumber: formattedPhoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _auth.signInWithCredential(credential).then((value) async {
+            if (value.user != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Phone number automatically verified and user signed in: ${value.user!.uid}')),
+              );
+              await _checkAndNavigate(context, value.user!);
+            }
+          });
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          isLoading = false;
+          notifyListeners();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Phone number verification failed. Message: ${e.message}')),
+          );
+        },
+        codeSent: (String verificationId, int? forceResendingToken) {
+          isLoading = false;
+          notifyListeners();
+
+          Navigator.pushNamed(context, otpScreen, arguments: verificationId);
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          // Auto retrieval timeout logic if needed
+        },
+      );
     } catch (e) {
-      print('Error signing in with credential: $e');
-      return null;
+      isLoading = false;
+      notifyListeners();
+      print('Error in phone number verification: $e');
     }
   }
 
-  Future<void> signOut() async {
-    await _auth.signOut();
+  Future<void> signInWithOTP(BuildContext context, String smsCode, String verificationId) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+      await _auth.signInWithCredential(credential);
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await _checkAndNavigate(context, user);
+      } else {
+        isLoading = false;
+        notifyListeners();
+        print('User is null after signing in with OTP.');
+      }
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      print('Error signing in with OTP: $e');
+    }
   }
 
-  User? get currentUser => _auth.currentUser;
+  Future<void> _checkAndNavigate(BuildContext context, User user) async {
+    bool userExists = await _userDataProvider.checkUserExists(user.uid);
+    if (userExists) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        bottomBarScreen,
+        (route) => false,
+      );
+    } else {
+      Navigator.pushNamed(context, userInfoScreen);
+    }
+    isLoading = false;
+    notifyListeners();
+  }
 }

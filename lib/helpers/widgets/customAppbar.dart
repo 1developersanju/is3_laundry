@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/helpers/utlis/routeGenerator.dart';
+
+import '../colorRes.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isDarkMode;
@@ -6,37 +9,45 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool? needActions;
   final bool? implyBackButton;
   final String? title;
+  final bool? centerTitle;
   const CustomAppBar({
     Key? key,
     required this.isDarkMode,
     this.onDarkModeChanged,
     this.needActions,
     this.implyBackButton,
-    this.title
-
+    this.title,
+    this.centerTitle,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title:title != null?Text(title.toString()): implyBackButton == true?Row(
-          children: [
-            Image.asset(
+      backgroundColor: ColorsRes.canvasColor,
+      title: title != null
+          ? Text(title.toString())
+          : implyBackButton == true
+              ? Row(
+                  children: [
+                    Image.asset(
+                      "assets/logo.png",
+                      scale: 8,
+                    ),
+                    const SizedBox(width: 10),
+                    const Text("IS3"),
+                  ],
+                )
+              : Text("IS3"),
+      leading: implyBackButton == true
+          ? IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back_ios_new),
+            )
+          : Image.asset(
               "assets/logo.png",
               scale: 8,
             ),
-            const SizedBox(width: 10),
-            const Text("IS3"),
-          ],
-        ) :Text("IS3"),
-      leading:implyBackButton == true?IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_new),
-        ): Image.asset(
-        "assets/logo.png",
-        scale: 8,
-      ),
-      centerTitle: false,
+      centerTitle:centerTitle ==true?true: false,
       actions: needActions == false
           ? []
           : [
@@ -54,6 +65,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   switch (value) {
                     case 'profile':
                       // Navigate to profile screen or handle profile action
+                      Navigator.of(context).pushNamed(profileScreen);
                       break;
                     case 'feedback':
                       // Navigate to feedback screen or handle feedback action

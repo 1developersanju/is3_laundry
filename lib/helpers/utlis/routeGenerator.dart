@@ -5,9 +5,12 @@ import 'package:laundry/screens/auth/otpScreen.dart';
 import 'package:laundry/screens/auth/registerScreen.dart';
 import 'package:laundry/screens/bottomBarScreen.dart';
 import 'package:laundry/screens/getStartedScreen.dart';
+import 'package:laundry/screens/orders.dart/order_list.dart';
+import 'package:laundry/screens/profile/profileScreen.dart';
 import 'package:laundry/screens/shops/bookingSuccessPage.dart';
 import 'package:laundry/screens/shops/shopDetail.dart';
 import 'package:laundry/screens/shops/shopList.dart';
+import 'package:laundry/screens/subscription/subscriptionScreen.dart';
 import 'package:laundry/screens/userInfoScreen.dart';
 import 'package:laundry/splashScreen.dart';
 
@@ -21,6 +24,9 @@ const String bottomBarScreen = "bottomBarScreen";
 const String shopListScreen = "ShopListScreen";
 const String shopDetailScreen = "ShopDetailScreen";
 const String bookingSuccessScreen = 'BookingSuccessScreen';
+const String orderListScreen = 'orderListScreen';
+const String subscribtionScreen = 'subscribtionScreen';
+const String profileScreen = 'profileScreen';
 String currentRoute = splashScreen;
 
 class RouteGenerator {
@@ -35,7 +41,7 @@ class RouteGenerator {
 
       case homeScreen:
         return CupertinoPageRoute(
-          builder: (_) => HomeScreen(),
+          builder: (_) => const HomeScreen(),
         );
 
       case registerScreen:
@@ -59,7 +65,7 @@ class RouteGenerator {
         return CupertinoPageRoute(builder: (_) => GetStartedScreen());
 
       case bottomBarScreen:
-        return CupertinoPageRoute(builder: (_) => BottomBarScreen());
+        return CupertinoPageRoute(builder: (_) => const BottomBarScreen());
 
       case shopListScreen:
         return CupertinoPageRoute(builder: (_) => ShopListPage());
@@ -71,10 +77,22 @@ class RouteGenerator {
             builder: (_) => ShopDetailScreen(
                   title: shopDetailArgs[0] as String,
                   services: shopDetailArgs[1],
+                  price: shopDetailArgs[2],
                 ));
 
       case bookingSuccessScreen:
-        return CupertinoPageRoute(builder: (_) => Bookingsuccesspage());
+              List<dynamic> successPageArgs = settings.arguments as List<dynamic>;
+
+        return CupertinoPageRoute(builder: (_) =>  BookingSuccessPage(text: successPageArgs[0],image:  successPageArgs[1]));
+
+      case orderListScreen:
+        return CupertinoPageRoute(builder: (_) => const OrdersPage());
+
+      case subscribtionScreen:
+        return CupertinoPageRoute(builder: (_) => const Subscriptionscreen());
+
+      case profileScreen:
+        return CupertinoPageRoute(builder: (_) => const ProfileScreen());
 
       default:
         return _errorRoute();

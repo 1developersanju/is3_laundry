@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "703514851565",
-    "project_id": "is3-laundry-c37bf",
-    "storage_bucket": "is3-laundry-c37bf.appspot.com"
+    "project_number": "728806362285",
+    "project_id": "laundry-e0b03",
+    "storage_bucket": "laundry-e0b03.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:703514851565:android:4be65b13410e23c84574e4",
+        "mobilesdk_app_id": "1:728806362285:android:57970a6c576a61df2d0a24",
         "android_client_info": {
           "package_name": "com.example.laundry"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCfOTPdJAtCaFImWqsXu2-8a_kJsx8ebvw"
+          "current_key": "AIzaSyBk1w1Dv7V5SsZ8AsKkUle9DPtLv41FSDg"
         }
       ],
       "services": {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:laundry/helpers/colorRes.dart'; // Assuming this file contains custom colors
 
 class PromisesWidget extends StatelessWidget {

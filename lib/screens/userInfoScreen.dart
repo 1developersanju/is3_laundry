@@ -1,11 +1,15 @@
 import 'dart:io';
 
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:laundry/helpers/colorRes.dart';
 import 'package:laundry/helpers/utlis/routeGenerator.dart';
+import 'package:laundry/helpers/widgets/customAppbar.dart';
+import 'package:laundry/providers/userDataProvider.dart';
+import 'package:provider/provider.dart';
 
 class UserInfoScreen extends StatefulWidget {
   @override
@@ -23,19 +27,22 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("IS3"),
-        leading: Image.asset(
-          "assets/logo.png",
-          scale: 8,
-        ),
-        centerTitle: false,
-        backgroundColor: Theme.of(context).canvasColor,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
+    bool _isDarkMode = false;
 
+    return Scaffold(
+      appBar: CustomAppBar(
+        isDarkMode: _isDarkMode,
+        title: "Profile",
+        centerTitle: false,
+        needActions: false,
+        implyBackButton: false,
+        onDarkModeChanged: (value) {
+          setState(() {
+            _isDarkMode = value;
+          });
+        },
+      ),
+      backgroundColor: ColorsRes.canvasColor,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -46,10 +53,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               GestureDetector(
                 onTap: _pickImage,
                 child: CircleAvatar(
-                                    radius: 40,
-                
-                    backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                    child: _profileImage == null ? Icon(Icons.person, size: 40) : null,
+                  radius: 40,
+                  backgroundImage:
+                      _profileImage != null ? FileImage(_profileImage!) : null,
+                  child: _profileImage == null
+                      ? Icon(Icons.person, size: 40)
+                      : null,
                 ),
               ),
               const SizedBox(height: 20),
@@ -74,8 +83,20 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Handle submit logic
+                  onPressed: () async {
+                    String uid = FirebaseAuth.instance.currentUser!.uid;
+                    await Provider.of<UserDataProvider>(context, listen: false)
+                        .saveUserData(
+                      uid: uid,
+                      firstName: _firstNameController.text.trim(),
+                      lastName: _lastNameController.text.trim(),
+                      dob: _dobController.text.trim(),
+                      gender: _selectedGender ?? '',
+                      email: _emailController.text.trim(),
+                      phoneNumber:
+                          FirebaseAuth.instance.currentUser!.phoneNumber!,
+                      profileImage: _profileImage,
+                    );
                     Navigator.pushNamed(context, getStartedScreen);
                   },
                   style: ElevatedButton.styleFrom(
@@ -84,7 +105,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child:  Text('Submit',
+                  child: Text('Submit',
                       style: TextStyle(color: ColorsRes.colorWhite)),
                 ),
               ),
@@ -105,8 +126,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     );
   }
 
-    Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -114,7 +136,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       });
     }
   }
-
 
   Widget _buildDateField(
       BuildContext context, TextEditingController controller, String label) {
@@ -128,7 +149,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       readOnly: true,
       onTap: () async {
         DateTime? pickedDate = await showDatePicker(
-          
           context: context,
           initialDate: DateTime.now(),
           firstDate: DateTime(1900),

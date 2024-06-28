@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/helpers/colorRes.dart';
 import 'package:laundry/helpers/widgets/homeWidget/imageSliders.dart'; // Assuming this is where imgList is imported from
@@ -8,6 +9,7 @@ class Aboutus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       color: ColorsRes.lightBlue,
       padding: EdgeInsets.all(16.0), // Add padding for spacing
       child: Row(
@@ -39,8 +41,8 @@ class Aboutus extends StatelessWidget {
           ),
           Expanded(
             flex: 2, // Take 1/3 of the row's space
-            child: Image.network(
-              imgList[0], // Assuming imgList is defined and holds URLs of images
+            child: CachedNetworkImage(
+             imageUrl:  imgList[0], // Assuming imgList is defined and holds URLs of images
               fit: BoxFit.cover,
             ),
           ),

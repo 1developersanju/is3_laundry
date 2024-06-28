@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyDuWpTwKyUVAWICobVo1C_H9L04gN_e9Ks</string>
+	<string>AIzaSyDRk-vgOKdvy2tgmyNffDeeYfo9Hd_rioI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>703514851565</string>
+	<string>728806362285</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.example.laundry</string>
 	<key>PROJECT_ID</key>
-	<string>is3-laundry-c37bf</string>
+	<string>laundry-e0b03</string>
 	<key>STORAGE_BUCKET</key>
-	<string>is3-laundry-c37bf.appspot.com</string>
+	<string>laundry-e0b03.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:703514851565:ios:99736035a0eace7e4574e4</string>
+	<string>1:728806362285:ios:7bafdd74d5e434212d0a24</string>
 </dict>
 </plist>
