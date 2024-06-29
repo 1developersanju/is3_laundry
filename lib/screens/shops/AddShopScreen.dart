@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:laundry/helpers/colorRes.dart';
+import 'package:laundry/helpers/utlis/routeGenerator.dart';
 import 'package:laundry/model/shopModel.dart';
 import 'package:laundry/providers/shopProvider.dart';
 import 'package:provider/provider.dart';
@@ -191,6 +192,25 @@ backgroundColor: ColorsRes.canvasColor,
                     ),
                   ),
                   child: Text('Add Shop', style: TextStyle(fontSize: 18,color: ColorsRes.colorWhite)),
+                ),
+              ),
+              SizedBox(height: 15,),
+               SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  
+                  onPressed: () async {
+                    // Validate inputs
+                  Navigator.pushNamed(context, manageSubscriptionPlansPage);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorsRes.themeBlue,
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text('Manage plans', style: TextStyle(fontSize: 18,color: ColorsRes.colorWhite)),
                 ),
               ),
             ],

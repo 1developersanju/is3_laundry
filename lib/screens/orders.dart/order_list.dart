@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:laundry/helpers/colorRes.dart';
+import 'package:laundry/helpers/utlis/routeGenerator.dart';
 import 'package:laundry/helpers/widgets/customAppbar.dart';
 import 'package:laundry/model/orderModel.dart';
+import 'package:laundry/providers/bottomBarProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:laundry/providers/orderProvider.dart';
 
@@ -62,6 +64,26 @@ class _OrdersPageState extends State<OrdersPage> {
               .where((order) =>
                   order.date.isBefore(today) && order.date.isBefore(lastWeek))
               .toList();
+
+          if (orders.isEmpty) {
+            return Center(
+              child: SizedBox(
+              // width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, shopListScreen);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorsRes.themeBlue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text('Discover Nearby Laundry Services!', style: TextStyle(color: Colors.white)),
+              ),
+            ),
+            );
+          }
 
           return Padding(
             padding: const EdgeInsets.all(16.0),

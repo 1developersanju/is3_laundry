@@ -306,11 +306,6 @@ Future<void> _fetchUserData() async {
         style: const TextStyle(fontSize: 18),
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: Text(
-        _addressLine2,
-        style: const TextStyle(fontSize: 16),
-        overflow: TextOverflow.ellipsis,
-      ),
       trailing: const Icon(Icons.arrow_forward_ios_rounded),
       onTap: () {
         showModalBottomSheet(
@@ -335,24 +330,13 @@ Future<void> _fetchUserData() async {
                         _addressLine1 = value;
                       },
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextField(
-                      controller: TextEditingController(text: _addressLine2),
-                      decoration:
-                          const InputDecoration(labelText: 'Address Line 2'),
-                      onChanged: (value) {
-                        _addressLine2 = value;
-                      },
-                    ),
-                    SizedBox(
+                                        SizedBox(
                       // width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
                           _updateUserData(
                               addressLine1: _addressLine1,
-                              addressLine2: _addressLine2);
+);
                           setState(() {});
                           Navigator.pop(context);
                         },
@@ -383,7 +367,6 @@ Future<void> _fetchUserData() async {
     String? gender,
     String? email,
     String? addressLine1,
-    String? addressLine2,
     File? profileImage,
   }) {
     _userDataProvider.updateUserData(
@@ -394,6 +377,6 @@ Future<void> _fetchUserData() async {
       email: email,
       profileImage: profileImage,
     );
-    _userDataProvider.saveOrUpdateAddress(addressLine1: addressLine1.toString(),addressLine2: addressLine2.toString());
+    _userDataProvider.saveOrUpdateAddress(addressLine1: addressLine1.toString());
   }
 }

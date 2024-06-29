@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:laundry/helpers/utlis/authServices.dart';
@@ -117,15 +119,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               setState(() {
                                 isLoading = true;
                               });
-                              String phoneNumber =
-                                   _phoneController.text.trim().replaceAll(' ', '');
+                              String phoneNumber = _phoneController.text
+                                  .trim()
+                                  .replaceAll(' ', '');
 
                               // Correctly accessing AuthProvider through Provider.of or Consumer
-                              await Provider.of<AuthProvider>(context, listen: false)
+                              await Provider.of<AuthProvider>(context,
+                                      listen: false)
                                   .verifyPhoneNumber(context, phoneNumber);
-
-                              setState(() {
-                                isLoading = false;
+                              Timer(Duration(seconds: 5), () async {
+                                setState(() {
+                                  isLoading = false;
+                                });
                               });
                             },
                             style: ElevatedButton.styleFrom(

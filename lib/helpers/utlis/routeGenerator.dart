@@ -10,8 +10,11 @@ import 'package:laundry/screens/profile/profileScreen.dart';
 import 'package:laundry/screens/shops/bookingSuccessPage.dart';
 import 'package:laundry/screens/shops/shopDetail.dart';
 import 'package:laundry/screens/shops/shopList.dart';
+import 'package:laundry/screens/subscription/manageSubscribtion.dart';
 import 'package:laundry/screens/subscription/subscriptionScreen.dart';
 import 'package:laundry/screens/userInfoScreen.dart';
+import 'package:laundry/screens/utils/addressPicker.dart';
+import 'package:laundry/screens/utils/contactUs.dart';
 import 'package:laundry/splashScreen.dart';
 
 const String splashScreen = 'splashScreen';
@@ -27,6 +30,9 @@ const String bookingSuccessScreen = 'BookingSuccessScreen';
 const String orderListScreen = 'orderListScreen';
 const String subscribtionScreen = 'subscribtionScreen';
 const String profileScreen = 'profileScreen';
+const String contactUs = 'contactUs';
+const String addressPickerScreen = 'addressPickerScreen';
+const String manageSubscriptionPlansPage = 'manageSubscriptionPlansPage';
 String currentRoute = splashScreen;
 
 class RouteGenerator {
@@ -83,9 +89,11 @@ class RouteGenerator {
                 ));
 
       case bookingSuccessScreen:
-              List<dynamic> successPageArgs = settings.arguments as List<dynamic>;
+        List<dynamic> successPageArgs = settings.arguments as List<dynamic>;
 
-        return CupertinoPageRoute(builder: (_) =>  BookingSuccessPage(text: successPageArgs[0],image:  successPageArgs[1]));
+        return CupertinoPageRoute(
+            builder: (_) => BookingSuccessPage(
+                text: successPageArgs[0], image: successPageArgs[1]));
 
       case orderListScreen:
         return CupertinoPageRoute(builder: (_) => const OrdersPage());
@@ -95,6 +103,12 @@ class RouteGenerator {
 
       case profileScreen:
         return CupertinoPageRoute(builder: (_) => const ProfileScreen());
+
+      case contactUs:
+        return CupertinoPageRoute(builder: (_) => ContactUsPage());
+
+      case manageSubscriptionPlansPage:
+        return CupertinoPageRoute(builder: (_) => ManageSubscriptionPlansPage());
 
       default:
         return _errorRoute();

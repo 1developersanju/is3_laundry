@@ -1,12 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/firebase_options.dart';
 import 'package:laundry/helpers/colorRes.dart';
 import 'package:laundry/helpers/utlis/authServices.dart';
 import 'package:laundry/helpers/utlis/routeGenerator.dart';
+import 'package:laundry/providers/bottomBarProvider.dart';
 import 'package:laundry/providers/orderProvider.dart';
 import 'package:laundry/providers/shopProvider.dart';
+import 'package:laundry/providers/subscribtionPlanProvider.dart';
 import 'package:laundry/providers/userDataProvider.dart';
+import 'package:map_location_picker/map_location_picker.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -14,12 +18,18 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+    if (defaultTargetPlatform == TargetPlatform.android) {
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+  }
+
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
     ChangeNotifierProvider<UserDataProvider>(create: (_) => UserDataProvider()),
     ChangeNotifierProvider(create: (_) => ShopProvider()..fetchShops()),
     ChangeNotifierProvider<OrderProvider>(create: (_) => OrderProvider()),
+    ChangeNotifierProvider<BottomBarProvider>(create: (_) => BottomBarProvider()),
+    ChangeNotifierProvider<SubscriptionPlanProvider>(create: (_) => SubscriptionPlanProvider()),
 
 
     // Add more providers as needed

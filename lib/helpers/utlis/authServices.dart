@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:laundry/helpers/utlis/routeGenerator.dart';
 import 'package:laundry/providers/userDataProvider.dart';
+import 'package:map_location_picker/map_location_picker.dart';
 
 
 class AuthProvider with ChangeNotifier {
@@ -83,7 +84,9 @@ class AuthProvider with ChangeNotifier {
         (route) => false,
       );
     } else {
+      
       Navigator.pushNamed(context, userInfoScreen);
+        
     }
     isLoading = false;
     notifyListeners();

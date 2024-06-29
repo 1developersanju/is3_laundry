@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/helpers/utlis/routeGenerator.dart';
-
+import 'package:provider/provider.dart';
+import '../../providers/bottomBarProvider.dart';
 import '../colorRes.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -10,6 +11,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool? implyBackButton;
   final String? title;
   final bool? centerTitle;
+
   const CustomAppBar({
     Key? key,
     required this.isDarkMode,
@@ -22,6 +24,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomBarProvider =
+        Provider.of<BottomBarProvider>(context, listen: false);
+
     return AppBar(
       backgroundColor: ColorsRes.canvasColor,
       title: title != null
@@ -47,7 +52,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               "assets/logo.png",
               scale: 8,
             ),
-      centerTitle:centerTitle ==true?true: false,
+      centerTitle: centerTitle == true ? true : false,
       actions: needActions == false
           ? []
           : [
@@ -65,16 +70,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   switch (value) {
                     case 'profile':
                       // Navigate to profile screen or handle profile action
-                      Navigator.of(context).pushNamed(profileScreen);
+                      bottomBarProvider.setIndex(3);
+                      Navigator.pushReplacementNamed(context, bottomBarScreen);
                       break;
                     case 'feedback':
                       // Navigate to feedback screen or handle feedback action
                       break;
                     case 'contact_us':
                       // Handle contact us action
+                      Navigator.pushNamed(context, contactUs);
                       break;
                     case 'settings':
-                      // Navigate to settings screen or handle settings action
+                      Navigator.pushNamed(context, addressPickerScreen);
+
                       break;
                     case 'log_out':
                       // Handle log out action

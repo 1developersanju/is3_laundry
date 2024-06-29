@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:laundry/helpers/colorRes.dart'; // Assuming this is for custom colors
-import 'package:laundry/helpers/utlis/routeGenerator.dart'; // Assuming this is for navigation routes
-import 'package:laundry/helpers/widgets/customAppbar.dart'; // Assuming this is a custom app bar widget
+import 'package:laundry/helpers/utlis/routeGenerator.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart'; // Import for date formatting
+import 'package:laundry/helpers/colorRes.dart';
+import 'package:laundry/helpers/widgets/customAppbar.dart';
+import 'package:laundry/providers/subscribtionPlanProvider.dart';
+import 'package:laundry/providers/userDataProvider.dart';
 
 class Subscriptionscreen extends StatefulWidget {
   const Subscriptionscreen({Key? key}) : super(key: key);
@@ -16,7 +20,10 @@ class _SubscriptionscreenState extends State<Subscriptionscreen> {
   double _offsetY = 0.0;
   double _sizeFactor = 1.0;
   double _containerSize = 200.0; // Initial size of the AnimatedContainer
+  Map<String, dynamic>? _selectedPlan;
+  String? _currentSubscriptionPlan;
 
+bool isSelected =false;
   @override
   void initState() {
     super.initState();
@@ -28,6 +35,13 @@ class _SubscriptionscreenState extends State<Subscriptionscreen> {
         _containerSize = _containerSize == 200.0 ? 250.0 : 200.0; // Toggle between 200 and 250
       });
     });
+
+    // Fetch initial data from providers
+    Provider.of<UserDataProvider>(context, listen: false).fetchSubscriptionPlanFromFirestore();
+    Provider.of<SubscriptionPlanProvider>(context, listen: false).fetchSubscriptionPlansFromFirestore();
+
+    // Fetch current subscription plan
+    _currentSubscriptionPlan = Provider.of<UserDataProvider>(context, listen: false).getCurrentSubscriptionPlan();
   }
 
   @override
@@ -41,113 +55,159 @@ class _SubscriptionscreenState extends State<Subscriptionscreen> {
         onDarkModeChanged: (value) {
           setState(() {
             _isDarkMode = value;
+
           });
         },
       ),
       backgroundColor: ColorsRes.canvasColor,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.35,
-                    child: Center(
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeInOut,
-                        transform: Matrix4.translationValues(0.0, _offsetY, 0.0),
-                        width: _containerSize * _sizeFactor, // Adjust width based on _containerSize and _sizeFactor
-                        height: _containerSize * _sizeFactor, // Adjust height based on _containerSize and _sizeFactor
-                        child: Image.asset('assets/IS3.png'),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    color: ColorsRes.themeBlue,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
-                      child: Text(
-                        "Our subscription model allows you to use the IS3 bag for storing clothes to be washed, with the service duration based on your chosen plan",
-                        style: TextStyle(
-                          fontSize: 22.0,
-
-                          color: ColorsRes.colorWhite,
+      body: Consumer2<UserDataProvider, SubscriptionPlanProvider>(
+        builder: (context, userDataProvider, subscriptionProvider, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      child: Center(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeInOut,
+                          transform: Matrix4.translationValues(0.0, _offsetY, 0.0),
+                          width: _containerSize * _sizeFactor,
+                          height: _containerSize * _sizeFactor,
+                          child: Image.asset('assets/IS3.png'),
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildSubscriptionOption("1 month", "₹ 500"),
-                      const SizedBox(width: 10),
-                      _buildSubscriptionOption("3 month", "₹ 1000"),
-                      const SizedBox(width: 10),
-                      _buildSubscriptionOption("6 month", "₹ 1500"),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () async {
-                // Implement your booking logic here
-                  Navigator.pushNamed(context, bookingSuccessScreen, arguments: ['Subscribtion Successful!!!','assets/booking_successful.json']);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorsRes.themeBlue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0),
+                    Card(
+                      color: ColorsRes.themeBlue,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
+                        child: Text(
+                          "Our subscription model allows you to use the IS3 bag for storing clothes to be washed, with the service duration based on your chosen plan",
+                          style: TextStyle(
+                            fontSize: 22.0,
+                            color: ColorsRes.colorWhite,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildSubscriptionOptions(subscriptionProvider),
+                    const SizedBox(height: 10),
+                    
+                  ],
                 ),
               ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Get Started with',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (_selectedPlan == null) {
+                    // Handle case where no plan is selected
+                    return;
+                  }
+
+                  String selectedPlanDuration = _selectedPlan!['duration'];
+                  double selectedPlanCost = _selectedPlan!['cost'];
+                  bool isNextPlanVerified = false;
+
+                  await userDataProvider.setOrUpdateSubscriptionPlan(
+                    duration: selectedPlanDuration,
+                    cost: selectedPlanCost,
+                    status: isNextPlanVerified,
+                  );
+
+                  Navigator.pushNamed(context, bookingSuccessScreen, arguments: ['Subscription Successful!!!', 'assets/booking_successful.json']);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorsRes.themeBlue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0),
                   ),
-                  Text(
-                    'IS3 subscription',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
+                ),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Get Started with',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    Text(
+                      'IS3 subscription',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSubscriptionOption(String duration, String price) {
-    return CircleAvatar(
-      radius: 50,
-      backgroundColor: ColorsRes.themeBlue,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            duration,
-            style: TextStyle(color: ColorsRes.colorWhite),
-          ),
-          Text(
-            price,
-            style: TextStyle(color: ColorsRes.colorWhite),
-          ),
-        ],
+  Widget _buildSubscriptionOptions(SubscriptionPlanProvider subscriptionProvider) {
+    List<Map<String, dynamic>> plans = subscriptionProvider.subscriptionPlans;
+
+    if (plans.isEmpty) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    return Container(
+      height: 120.0, // Adjust height as needed
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: plans.length,
+        itemBuilder: (context, index) {
+          Map<String, dynamic> plan = plans[index];
+          String duration = plan['duration'];
+          double cost = plan['cost'];
+
+           isSelected = _selectedPlan == plan;
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedPlan = plan;
+
+              });
+            },
+            child: Container(
+              width: 120, // Fixed width for circle
+              margin: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected || _currentSubscriptionPlan == duration? ColorsRes.themeBlue : ColorsRes.lightBlue,
+              ),
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    duration,
+                    style: TextStyle(color:isSelected || _currentSubscriptionPlan == duration? ColorsRes.colorWhite:ColorsRes.textBlack),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '₹ $cost',
+                    style: TextStyle(color:isSelected|| _currentSubscriptionPlan == duration ? ColorsRes.colorWhite:ColorsRes.textBlack),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 }
+
+

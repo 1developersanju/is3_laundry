@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,10 @@ import 'package:laundry/helpers/colorRes.dart';
 import 'package:laundry/helpers/utlis/routeGenerator.dart';
 import 'package:laundry/helpers/widgets/customAppbar.dart';
 import 'package:laundry/providers/userDataProvider.dart';
+import 'package:map_location_picker/map_location_picker.dart';
 import 'package:provider/provider.dart';
+
+import '../helpers/utlis/routeGenerator.dart';
 
 class UserInfoScreen extends StatefulWidget {
   @override
@@ -19,7 +21,6 @@ class UserInfoScreen extends StatefulWidget {
 class _UserInfoScreenState extends State<UserInfoScreen> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   String? _selectedGender; // Make _selectedGender nullable
@@ -97,7 +98,48 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                           FirebaseAuth.instance.currentUser!.phoneNumber!,
                       profileImage: _profileImage,
                     );
-                    Navigator.pushNamed(context, getStartedScreen);
+
+                    // Navigate to the MapLocationPicker screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return MapLocationPicker(
+                            hideBackButton: true,
+                            hasLocationPermission: true,
+                            hideMapTypeButton: true,
+                            bottom: false,
+                            bottomCardIcon:
+                                Icon(Icons.arrow_forward_ios_rounded),
+                            apiKey: "AIzaSyDLnlJhrxMtkd6h_BH6xPp3OaxVDU3jO9g",
+                            popOnNextButtonTaped: false, // Prevents pop
+                            currentLatLng: const LatLng(11.1271, 78.6569),
+                            onNext: (GeocodingResult? result) async {
+                              if (result != null) {
+                                UserDataProvider userDataProvider =
+                                    Provider.of<UserDataProvider>(context,
+                                        listen: false);
+
+                                print(result.formattedAddress);
+                                await userDataProvider.saveOrUpdateAddress(
+                                  addressLine1:
+                                      result.formattedAddress.toString(),
+                                );
+                                // Navigate to the getStartedScreen
+                                Navigator.pushReplacementNamed(
+                                    context, getStartedScreen);
+                              }
+                            },
+                            onSuggestionSelected:
+                                (PlacesDetailsResponse? result) {
+                              if (result != null) {
+                                // Handle suggestions if necessary
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorsRes.themeBlue,
@@ -105,7 +147,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Text('Submit',
+                  child: Text('Pick Address',
                       style: TextStyle(color: ColorsRes.colorWhite)),
                 ),
               ),

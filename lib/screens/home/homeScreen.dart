@@ -11,6 +11,7 @@ import 'package:laundry/screens/home/shopSlider.dart';
 import '../../helpers/widgets/homeWidget/aboutus.dart';
 
 class HomeScreen extends StatefulWidget {
+  
   const HomeScreen({Key? key}) : super(key: key);
 
   @override

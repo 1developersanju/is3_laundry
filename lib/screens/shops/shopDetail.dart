@@ -30,6 +30,7 @@ class ShopDetailScreen extends StatefulWidget {
 
 class _ShopDetailScreenState extends State<ShopDetailScreen> {
   bool _isDarkMode = false;
+  bool _isLoading = false; // Track loading state
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -40,8 +41,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     super.initState();
     // Fetch the current user's phone number and address from the profile and set the controllers
     var userProvider = Provider.of<UserDataProvider>(context, listen: false);
- _phoneController.text = userProvider.currentUser!.phoneNumber.toString().substring(3);
-;
+    _phoneController.text =
+        userProvider.currentUser!.phoneNumber.toString().substring(3);
     _addressController.text = userProvider.addressLine1.toString();
   }
 
@@ -113,7 +114,6 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                       ),
                       selectedColor: ColorsRes
                           .themeBlue, // Change chip color when selected
-                      // backgroundColor: Colors.grey.shade300, // Default chip color
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                         side: BorderSide(
@@ -213,57 +213,28 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    if (_selectedIndex == -1 ||
-                        _weightController.text.isEmpty ||
-                        _phoneController.text.isEmpty ||
-                        _addressController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                                'Please fill all fields and select a service.')),
-                      );
-                      return;
-                    }
-
-                    var userProvider =
-                        Provider.of<UserDataProvider>(context, listen: false);
-                    var currentUser = userProvider.currentUser;
-
-                    var order = Orders(
-                      id: currentUser!.uid,
-                      serviceType: servicesList[_selectedIndex],
-                      weight: double.parse(_weightController.text),
-                      phoneNumber: "+91 " + _phoneController.text,
-                      location: _addressController.text,
-                      date: DateTime.timestamp(),
-                      status: "",
-                      shopName: widget.shopName,
-                      shopid: widget.shopId,
-                      price:
-                          widget.price * double.parse(_weightController.text),
-                    );
-
-                    var orderProvider =
-                        Provider.of<OrderProvider>(context, listen: false);
-                    await orderProvider.createOrder(order);
-                    print("order: ${order.shopName}");
-                    Navigator.pushNamed(context, bookingSuccessScreen,
-                        arguments: [
-                          'Booked successfully. \nOur team member will contact you shortly.\nThank you!!!',
-                          'assets/booking_successful.json'
-                        ]);
-                  },
+                  onPressed: _isLoading ? null : () => _createOrder(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorsRes.themeBlue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Book Now',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : const Text(
+                          'Book Now',
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
               ),
             ],
@@ -271,5 +242,66 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _createOrder() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    if (_selectedIndex == -1 ||
+        _weightController.text.isEmpty ||
+        _phoneController.text.isEmpty ||
+        _addressController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all fields and select a service.'),
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    var userProvider = Provider.of<UserDataProvider>(context, listen: false);
+    var currentUser = userProvider.currentUser;
+
+    var order = Orders(
+      id: currentUser!.uid,
+      serviceType: widget.services[_selectedIndex],
+      weight: double.parse(_weightController.text),
+      phoneNumber: "+91 " + _phoneController.text,
+      location: _addressController.text,
+      date: DateTime.now(),
+      status: "",
+      shopName: widget.shopName,
+      shopid: widget.shopId,
+      price: widget.price * double.parse(_weightController.text),
+    );
+
+    var orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    try {
+      await orderProvider.createOrder(order);
+      Navigator.pushNamed(context, bookingSuccessScreen, arguments: [
+        'Booked successfully. \nOur team member will contact you shortly.\nThank you!!!',
+        'assets/booking_successful.json'
+      ]);
+      _weightController.clear();
+
+      setState(() {
+        _selectedIndex = -1;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to create order. Please try again.'),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 }
